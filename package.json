@@ -1,0 +1,23 @@
+{
+  "name": "olx-realty",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sergii-azizov/olx-realty.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sergii-azizov/olx-realty/issues"
+  },
+  "homepage": "https://github.com/sergii-azizov/olx-realty#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "needle": "^2.4.0"
+  }
+}
