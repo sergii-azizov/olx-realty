@@ -25,7 +25,7 @@ const getParsedOffers = offers => {
     const $ = cheerio.load(offers);
     let result = [];
 
-    $('.offers .wrap').slice(0, 3).each((idx, el) => {
+    $('.offers .wrap').each((idx, el) => {
         const $el = $(el);
         const date = $el.find('[data-icon="clock"]').parent().text().trim();
 
@@ -38,11 +38,11 @@ const getParsedOffers = offers => {
             expire: getOffsetDateByDays(1)
         };
 
-        const hasInDB = Boolean(db[offer.title]);
-        const offerDateInDBIsExpired = hasInDB && db[offer.title].expire <= new Date();
+        const hasInDB = Boolean(db.data[offer.title]);
+        const offerDateInDBIsExpired = hasInDB && db.data[offer.title].expire <= new Date();
 
         if (!hasInDB || offerDateInDBIsExpired) {
-            db[offer.title] = offer;
+            db.data[offer.title] = offer;
 
             result.push(offer);
         }
@@ -51,14 +51,28 @@ const getParsedOffers = offers => {
     return result;
 };
 
-const getParsedOfferImages = offer => {
+const getOfferDetails = offer => {
     const $ = cheerio.load(offer);
-    let result = [];
+    const $details = $('.details table');
+    const $floor = $details.find('tr:contains("Этаж")');
+    const $area =  $details.find('tr:contains("Общая площадь")');
+    const $border =  $details.find('tr:contains("Тип стен")');
+
+    const hasBorder = $border.first().find('th').text().trim();
+    const hasArea = $area.first().find('th').text().trim();
+    const hasFloor = $floor.first().find('th').text().trim();
+
+    let result = {
+        floor: hasFloor ? `${$floor.first().find('th').text().trim()}: ${$floor.first().find('td').text().trim()}/${$floor.last().find('td').text().trim()}` :'',
+        area: hasArea ? `${$area.first().find('th').text().trim()}: ${$area.first().find('td').text().trim()}` : '',
+        border: hasBorder ? `${$border.first().find('th').text().trim()}: ${$border.first().find('td').text().trim()}` : '',
+        photos: []
+    };
 
     $('.photo-glow img').each((idx, el) => {
         const $el = $(el);
 
-        result.push($el.attr('src'));
+        result.photos.push($el.attr('src'));
     });
 
     return result;
@@ -81,8 +95,58 @@ const getHTMLOffers = offers => {
     }, ''));
 };
 
+const getRandomInteger = (min, max) => {
+    let rand = min - 0.5 + Math.random() * (max - min + 1);
+
+    rand = Math.ceil(rand);
+
+    return rand;
+};
+
+const getRandomHoursDelayInMS = (from, to) => getRandomInteger(from, to) * 60 * 1000;
+
+const getDateExecution = () => {
+    const from = new Date();
+    const to = new Date();
+
+    from.setHours(8);
+    from.setMinutes(0);
+    from.setMilliseconds(0);
+
+    to.setHours(21);
+    to.setMinutes(0);
+    to.setMilliseconds(0);
+
+    return {
+        from,
+        to
+    }
+};
+
+const startTimer = (cb, { from, to }, condition, destroy) => {
+    const timeToExecution = getRandomHoursDelayInMS(from, to);
+    const d = new Date();
+
+    d.setMinutes(d.getMinutes() + timeToExecution / 60 / 1000);
+
+    console.log('==> Timer started:', new Date().toTimeString());
+    console.log('==> Time to next execution:', d.toTimeString());
+
+    const timer = setTimeout(() => {
+        if (condition()) { cb(); }
+
+        console.log('==> Executed at:', new Date().toTimeString());
+
+        startTimer(cb, { from, to }, condition, destroy);
+    }, timeToExecution);
+
+    destroy.destroy = () => { clearTimeout(timer) };
+};
+
 module.exports = {
-    getParsedOfferImages,
+    getDateExecution,
+    startTimer,
+    getOfferDetails,
     getParsedOffers,
     getHTMLOffers
 };
