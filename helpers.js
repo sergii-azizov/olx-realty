@@ -1,4 +1,5 @@
 const cheerio = require('cheerio');
+const db = require('./db');
 
 const getHTMLTemplate = body => `
     <!DOCTYPE html>
@@ -12,22 +13,38 @@ const getHTMLTemplate = body => `
     </body></html>
 `;
 
+const getOffsetDateByDays = days => {
+    const date = new Date();
+
+    date.setDate(date.getDate() + days);
+
+    return date;
+};
+
 const getParsedOffers = offers => {
     const $ = cheerio.load(offers);
     let result = [];
 
-    $('.offers .wrap').each((idx, el) => {
+    $('.offers .wrap').slice(0, 3).each((idx, el) => {
         const $el = $(el);
         const date = $el.find('[data-icon="clock"]').parent().text().trim();
 
-        if (date.includes('Сегодня')) {
-            result.push({
-                title: $el.find('h3').text().trim(),
-                link: $el.find('h3 a').attr('href'),
-                imgUrl: $el.find('img').attr('src'),
-                price: $el.find('.price').text().trim(),
-                date
-            })
+        const offer = {
+            title: $el.find('h3').text().trim(),
+            link: $el.find('h3 a').attr('href'),
+            imgUrl: $el.find('img').attr('src'),
+            price: $el.find('.price').text().trim(),
+            date,
+            expire: getOffsetDateByDays(1)
+        };
+
+        const hasInDB = Boolean(db[offer.title]);
+        const offerDateInDBIsExpired = hasInDB && db[offer.title].expire <= new Date();
+
+        if (!hasInDB || offerDateInDBIsExpired) {
+            db[offer.title] = offer;
+
+            result.push(offer);
         }
     });
 
