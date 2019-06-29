@@ -103,7 +103,7 @@ const getRandomInteger = (min, max) => {
     return rand;
 };
 
-const getRandomHoursDelayInMS = (from, to) => getRandomInteger(from, to) * 60 * 1000;
+const getRandomHoursDelayInMS = (from, to) => getRandomInteger(from, to) * 60 * 60 * 1000;
 
 const getDateExecution = () => {
     const from = new Date();
@@ -127,7 +127,7 @@ const startTimer = (cb, { from, to }, condition, destroy) => {
     const timeToExecution = getRandomHoursDelayInMS(from, to);
     const d = new Date();
 
-    d.setMinutes(d.getMinutes() + timeToExecution / 60 / 1000);
+    d.setMinutes(d.getMinutes() + timeToExecution / 60 / 60 / 1000);
 
     console.log('==> Timer started:', new Date().toTimeString());
     console.log('==> Time to next execution:', d.toTimeString());
