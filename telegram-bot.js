@@ -9,7 +9,7 @@ async function asyncForEach(array, callback) {
 
 const triggerMsg = ({ url, bot, msg }) => {
     needle('get', url).then(async ({ body }) => {
-        const offers = helpers.getParsedOffers(body).slice(0, 3);
+        const offers = helpers.getParsedOffers(body);
 
         console.log('==> The date to display in Telegram:', offers.map(({ title }) => title));
 
