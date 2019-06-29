@@ -8,7 +8,6 @@ const tBot = require('./telegram-bot');
 
 let offers = null;
 const example = "https://www.olx.ua/nedvizhimost/kvartiry-komnaty/prodazha-kvartir-komnat/dnepr/";
-//https://www.olx.ua/nedvizhimost/kvartiry-komnaty/prodazha-kvartir-komnat/dnepr/q-%D0%BD%D0%B8%D0%B7-%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%B0/?search%5Bfilter_float_number_of_rooms%3Afrom%5D=3&search%5Bfilter_float_number_of_rooms%3Ato%5D=4&search%5Bphotos%5D=1&currency=USD
 
 // Telegram Bot
 const connectToTelegramBot = () => {
@@ -75,11 +74,13 @@ const requestHandler = (request, response) => {
     response.setHeader('Content-Type', 'text/html');
 
     if (!offers) {
-        needle('get', URL).then(data => {
+        /*needle('get', URL).then(data => {
             offers = helpers.getHTMLOffers(data.body);
             response.end(offers);
-        });
+        });*/
     }
+
+    response.end('Server is started');
 };
 
 const server = http.createServer(requestHandler);
