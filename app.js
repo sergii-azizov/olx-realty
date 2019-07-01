@@ -2,6 +2,8 @@ const http = require('http');
 const needle = require('needle');
 const TelegramBot = require('node-telegram-bot-api');
 
+process.env.TZ = "Europe/Kiev";
+
 let db = require('./db');
 const helpers = require('./helpers');
 const tBot = require('./telegram-bot');
@@ -12,7 +14,7 @@ const example = "https://www.olx.ua/nedvizhimost/kvartiry-komnaty/prodazha-kvart
 
 // Telegram Bot
 const connectToTelegramBot = () => {
-    const token = '';
+    const token = '822779987:AAGhq4fA5KoeLNG5_XL2OjojEYbturn0dPY';
     const bot = new TelegramBot(token, {polling: true});
     let destroy = {};
     let started = false;
@@ -87,5 +89,5 @@ const requestHandler = (request, response) => {
 const server = http.createServer(requestHandler);
 server.listen(3000, () => {
     connectToTelegramBot();
-    console.log(`server is listening on 3000`, new Date())
+    console.log(`server is listening on 3000`, new Date().toLocaleTimeString(), new Date())
 });
