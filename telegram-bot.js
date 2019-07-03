@@ -27,10 +27,12 @@ const triggerMsg = ({ url, bot, msg }) => {
 
                 await bot.sendMediaGroup(msg.chat.id, offerImages);
 
-                await bot.sendMessage(msg.chat.id, offerTitle, {
-                    parse_mode: 'HTML',
-                    disable_web_page_preview: true
-                });
+                if (offerDetails.photos.length > 1) {
+                    await bot.sendMessage(msg.chat.id, offerTitle, {
+                        parse_mode: 'HTML',
+                        disable_web_page_preview: true
+                    });
+                }
             })
         };
 
